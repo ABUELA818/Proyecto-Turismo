@@ -3,13 +3,29 @@ import { useState } from "react";
 import { FaGoogle, FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
 import "./globals.css"
 import Image from "next/image";
+import { registro, login } from './pocketbase';
+import { Router } from "next/router";
 
 export default function Login() {
   const [isActive, setIsActive] = useState(false);
+  const [nombre, setNombre] = useState('');
+  const [correo, setCorreo] = useState('');
+  const [contraseña, setContraseña] = useState('');
+  
+
   const activar = () => {
     setIsActive(true);
   }
   const desactivar = () => setIsActive(false);
+
+  const handleRegistro = async () => {
+    await registro(nombre, correo, contraseña);
+  };
+
+  const handleLogin = async () => {
+    await login(correo, contraseña);
+    router.push('/Landing');
+  };
 
   return (
     <>
@@ -17,7 +33,7 @@ export default function Login() {
           <div className="Imagen">
             <div className="Fondo">
               <Image 
-                src="/assets/Fondo.jpg" 
+                src="/assets/Login/fondo.jpg" 
                 alt="Fondo"
                 layout="fill"
                 className="Fondo-img"/>
@@ -28,10 +44,10 @@ export default function Login() {
               <h1>Registro</h1>
             </div>
             <div className="Formulario2">
-              <input type="text" placeholder="Nombre" />
-              <input type="email" placeholder="Correo" />
-              <input type="password" placeholder="Contraseña" />
-              <button className="Btn_Formulario_R">Registrate</button>
+              <input type="text" placeholder="Nombre" value={nombre} onChange={(e) => setNombre(e.target.value)} />
+              <input type="email" placeholder="Correo" value={correo} onChange={(e) => setCorreo(e.target.value)} />
+              <input type="password" placeholder="Contraseña" value={contraseña} onChange={(e) => setContraseña(e.target.value)} />
+              <button className="Btn_Formulario_R" onClick={handleRegistro}>Registrate</button>
             </div>
             <div className="Redes">
               <div className="otro2">
@@ -64,10 +80,10 @@ export default function Login() {
               <h1>Inicio de Sesion</h1>
             </div>
             <div className="Formulario">
-              <input type="email" placeholder="Correo"/>
-              <input type="Password"  placeholder="Contraseña"/>
+              <input type="email" placeholder="Correo" value={correo} onChange={(e) => setCorreo(e.target.value)} />
+              <input type="Password" placeholder="Contraseña" value={contraseña} onChange={(e) => setContraseña(e.target.value)} />
               <button className="Recuperar">¿Olvidaste tu contraseña?</button>
-              <button className="Btn_Formulario">Inicia Sesion</button>
+              <button className="Btn_Formulario" onClick={handleLogin}>Inicia Sesion</button>
             </div>
             <div className="Redes">
               <div className="otro">
