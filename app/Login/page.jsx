@@ -3,8 +3,7 @@ import { useState } from "react";
 import { FaGoogle, FaFacebookF, FaInstagram, FaTwitter } from "react-icons/fa";
 import "./globals.css"
 import Image from "next/image";
-import { registro, login } from './pocketbase';
-import { Router } from "next/router";
+import { useRouter } from "next/navigation"; 
 
 export default function Login() {
   const [isActive, setIsActive] = useState(false);
@@ -19,12 +18,59 @@ export default function Login() {
   const desactivar = () => setIsActive(false);
 
   const handleRegistro = async () => {
-    await registro(nombre, correo, contraseña);
+    try {
+      const response = await fetch('/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: nombre,
+          email: correo,
+          password: contraseña,
+        }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        alert(data.message); 
+        setNombre('');
+        setCorreo('');
+        setContraseña('');
+      } else {
+        const errorData = await response.json();
+        alert(errorData.message); 
+      }
+    } catch (error) {
+      console.error('Error al registrar el usuario:', error);
+      alert('Ocurrió un error al registrar el usuario.');
+    }
   };
 
   const handleLogin = async () => {
-    await login(correo, contraseña);
-    router.push('/Landing');
+    try {
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: correo,
+          password: contraseña,
+        }),
+      });
+  
+      if (response.ok) {
+        const data = await response.json();
+        alert(`Bienvenido, ${data.user.name}`); 
+      } else {
+        const errorData = await response.json();
+        alert(errorData.message); 
+      }
+    } catch (error) {
+      console.error('Error al iniciar sesión:', error);
+      alert('Ocurrió un error al iniciar sesión.');
+    }
   };
 
   return (
