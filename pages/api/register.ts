@@ -17,11 +17,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   }
 
   try {
-   const query = 'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)';
-    const values = [name, email, password, 1]; 
+    const query = 'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)';
+    const values = [name, email, password, 1];
     await pool.execute(query, values);
 
-    res.status(201).json({ message: 'User registered successfully' });
+    res.status(201).json({ message: 'Ususario Registrado' });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: 'Internal server error' });
