@@ -1,0 +1,424 @@
+/* Reset y configuración base */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Estructura principal */
+.page-wrapper {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Hero Section */
+.hero-section {
+  position: relative;
+  height: 600px;
+  width: 100%;
+  background-image: url("/assets/Hoteleria/fiesta_inn.png");
+  background-size: cover;
+  background-position: center;
+  padding-top: 60px;
+  background-color: #000;
+}
+
+.hero-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.hero-content {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: white;
+  width: 100%;
+  max-width: 800px;
+  padding: 0 20px;
+  z-index: 5;
+}
+
+.hero-content h1 {
+  font-size: 3.5rem;
+  font-weight: 300;
+  letter-spacing: 2px;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+}
+
+.hero-content h1 span {
+  display: block;
+  font-size: 4rem;
+  font-weight: 700;
+}
+
+.hero-content p {
+  margin-top: 1rem;
+  font-size: 1rem;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.7);
+}
+
+/* Hotel Cards Container */
+.hotels-container {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+}
+
+/* Hotel Card */
+.hotel-card {
+  position: relative;
+  height: 400px;
+  width: 100%;
+  display: flex;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  margin: 0;
+  overflow: hidden;
+}
+
+.hotel-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Fondos */
+.hotel-bg-black {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 75%;
+  background-color: black;
+}
+
+.hotel-bg-white {
+  position: absolute;
+  right: 0;
+  top: 0;
+  height: 100%;
+  width: 25%;
+  background-color: white;
+}
+
+.hotel-card-reverse .hotel-bg-black {
+  left: auto;
+  right: 0;
+}
+
+.hotel-card-reverse .hotel-bg-white {
+  right: auto;
+  left: 0;
+}
+
+/* Franja de acento amarillo/café */
+.hotel-accent-stripe {
+  position: absolute;
+  bottom: 0;
+  right: 25%;
+  width: 25%;
+  height: 8px;
+  background-color: #d4af37; /* Color dorado/café */
+  z-index: 20;
+}
+
+.hotel-accent-stripe-reverse {
+  right: auto;
+  left: 25%;
+}
+
+/* Contenedor de imágenes */
+.hotel-image-container {
+  position: absolute;
+  right: 5%;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 80%;
+  width: 45%;
+  z-index: 10;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+.hotel-image-container-reverse {
+  right: auto;
+  left: 5%;
+}
+
+/* Carrusel de imágenes */
+.hotel-image {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+.carousel img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.carousel img.active {
+  opacity: 1;
+}
+
+/* Flechas del carrusel */
+.carousel-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: rgba(0, 0, 0, 0.5);
+  color: white;
+  border: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 15;
+  opacity: 0;
+  transition: opacity 0.3s ease, background-color 0.3s ease;
+}
+
+.hotel-image-container:hover .carousel-arrow {
+  opacity: 1;
+}
+
+.carousel-arrow:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+.carousel-prev {
+  left: 10px;
+}
+
+.carousel-next {
+  right: 10px;
+}
+
+.carousel-arrow svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Indicadores del carrusel */
+.carousel-indicators {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 15;
+}
+
+.carousel-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(255, 255, 255, 0.5);
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.carousel-dot.active {
+  background-color: white;
+}
+
+/* Información */
+.hotel-info {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 50%;
+  padding: 2rem 3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  z-index: 10;
+  color: white;
+}
+
+.hotel-card-reverse .hotel-info {
+  left: auto;
+  right: 0;
+}
+
+.hotel-info h2 {
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin: 0;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.hotel-info h2 span {
+  display: block;
+}
+
+.hotel-highlight {
+  margin-top: 0.5rem;
+  color: #ffcc00;
+  font-size: 1rem;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.hotel-amenities {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.amenity {
+  display: flex;
+  align-items: center;
+  font-size: 1rem;
+  text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+}
+
+.amenity svg {
+  width: 18px;
+  height: 18px;
+  margin-right: 0.75rem;
+  stroke: #3b82f6;
+  stroke-width: 2;
+  filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+}
+
+.hotel-rating {
+  display: flex;
+  margin-top: 1.5rem;
+  gap: 0.25rem;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  .hero-section {
+    height: 350px;
+    padding-top: 40px;
+  }
+
+  .hero-content h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero-content h1 span {
+    font-size: 3rem;
+  }
+
+  .hotel-card {
+    height: auto;
+    flex-direction: column;
+    margin-bottom: 0;
+  }
+
+  .hotel-bg-white,
+  .hotel-bg-black {
+    position: relative;
+    width: 100%;
+    height: 50%;
+  }
+
+  .hotel-image-container {
+    position: relative;
+    width: 90%;
+    height: 250px;
+    right: auto;
+    left: 5%;
+    top: 0;
+    transform: translateY(-30px);
+    margin-bottom: -30px;
+  }
+
+  .hotel-image-container-reverse {
+    left: 5%;
+  }
+
+  .hotel-info {
+    position: relative;
+    width: 100%;
+    padding: 1.5rem;
+    background-color: black;
+  }
+
+  .hotel-card-reverse {
+    flex-direction: column-reverse;
+  }
+
+  .carousel-arrow {
+    opacity: 1;
+    width: 30px;
+    height: 30px;
+  }
+
+  .carousel-arrow svg {
+    width: 15px;
+    height: 15px;
+  }
+
+  .hotel-accent-stripe,
+  .hotel-accent-stripe-reverse {
+    width: 25%;
+    right: 0;
+    left: auto;
+  }
+
+  .hotel-accent-stripe-reverse {
+    right: auto;
+    left: 0;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero-section {
+    height: 300px;
+    padding-top: 30px;
+  }
+
+  .hero-content h1 {
+    font-size: 2rem;
+  }
+
+  .hero-content h1 span {
+    font-size: 2.5rem;
+  }
+
+  .hotel-info h2 {
+    font-size: 1.5rem;
+  }
+
+  .amenity {
+    font-size: 0.875rem;
+  }
+
+  .hotel-image-container {
+    height: 200px;
+  }
+}
+
