@@ -148,8 +148,8 @@
   right: 5%;
   top: 50%;
   transform: translateY(-50%);
-  height: 80%;
-  width: 45%;
+  height: 100%;
+  width: 65%;
   z-index: 10;
   overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.1);
@@ -164,8 +164,8 @@
 
 /* Carrusel de imágenes */
 .hotel-image {
-  width: 100%;
-  height: 100%;
+  width: 120%;
+  height: 120%;
   position: relative;
 }
 
@@ -271,14 +271,16 @@
 }
 
 .hotel-info h2 {
-  font-size: 1.75rem;
+  font-size: 2.4rem;
   font-weight: 700;
   margin: 0;
   text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+  display: center;
 }
 
 .hotel-info h2 span {
-  display: block;
+  font-size: 2.4rem;
+  display: center;
 }
 
 .hotel-highlight {
