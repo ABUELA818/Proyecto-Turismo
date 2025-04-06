@@ -1,0 +1,43 @@
+.Tarjeta {
+    border-radius: 50px;
+    background-color: black;
+    display: flex;
+    justify-content: center;
+    height: 100%;
+    z-index: 999;
+}
+
+.Img_Tarjeta {
+    border-radius: 50px;
+    position: relative;
+    display: block;
+    mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 60%, rgba(0,0,0,0) 100%);
+    -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 30%, rgba(0,0,0,0) 85%);
+}
+
+.Res_Nombre {
+    color: white;
+    font-size: 35px;
+}
+
+.Res_Info {
+    position: absolute;
+    margin-top: 20%;
+    color: white;
+    font-size: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 20%;
+    height: 10%;
+}
+
+.Res_Info p {
+    font-size: 35px;
+}
+
+.Estrellas_Contenedor {
+    width: 80%;
+    margin-top: -10%;
+}

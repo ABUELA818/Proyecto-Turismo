@@ -1,0 +1,63 @@
+/*==========================
+Estilos generales del footer
+==========================*/
+Footer {
+    background-color: #161616;
+    width: 100%;
+    height: auto;
+    z-index: 999;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 20px;
+}
+
+/*=============================
+Informacion de contacto y redes
+=============================*/
+.Medio {
+    display: flex;
+    justify-content: space-between;
+    width: 90%;
+}
+
+.Redes {
+    display: flex;
+    margin-top: 50px;
+    font-size: 50px;
+    margin-right: 100px;
+}
+
+/*==========
+Linea blanca
+==========*/
+.Linea {
+    width: 80%;
+    height: 1px;
+    background-color: white;
+}
+
+/*============
+Estado y Aviso
+============*/
+.Abajo {
+    width: 90%;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+}
+
+.Aviso {
+    text-decoration: underline;
+}
+
+.Img_Dgo {
+    width: 20%;
+}
+
+.Arriba {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+}
