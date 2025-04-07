@@ -2,12 +2,22 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 import pool from '../../lib/db';
 import jwt from 'jsonwebtoken';
 import { JWT_SECRET } from '../../lib/config';
+import { upload } from '../../lib/s3';
+import nextConnect from 'next-connect'; // Use the default export
 
 type Data = {
   message: string;
 };
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse<Data>) {
+export const config = {
+  api: {
+    bodyParser: false,
+  },
+};
+
+const handler = nextConnect<NextApiRequest, NextApiResponse<Data>>(); // Create the handler
+
+handler.post(async (req, res) => {
   if (req.method !== 'POST') {
     return res.status(405).json({ message: 'Method not allowed' });
   }
@@ -22,6 +32,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     // Decodificar el token para obtener el user_id
     const decoded = jwt.verify(token, JWT_SECRET) as { id: number };
     const user_id = decoded.id;
+
+    // Procesar la subida de archivos
+    await new Promise((resolve, reject) => {
+      upload.single('imagen')(req as any, res as any, (err) => {
+        if (err) reject(err);
+        else resolve(null);
+      });
+    });
 
     const {
       nombre,
@@ -40,11 +58,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       return res.status(400).json({ message: 'Faltan campos requeridos' });
     }
 
+    // Obtener la URL de la imagen si se subió una
+    const imagen_url = (req as any).file?.location || null;
+
     // Insertar en la base de datos
     const query = `
-      INSERT INTO negocios 
-      (nombre, email, ubicacion, descripcion, tipo, url_negocio, dia, horario_apertura, horario_cierre, user_id) 
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      INSERT INTO establecimientos 
+      (nombre, email, ubicacion, descripcion, tipo, url_negocio, dia, horario_apertura, horario_cierre, user_id, imagen_url) 
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
     const values = [
@@ -57,7 +78,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       dia,
       horario_apertura,
       horario_cierre,
-      user_id
+      user_id,
+      imagen_url
     ];
 
     await pool.execute(query, values);
@@ -70,4 +92,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
     res.status(500).json({ message: 'Error interno del servidor' });
   }
-}
+});
+
+export default handler;
