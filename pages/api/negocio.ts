@@ -61,7 +61,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     // Insertar en la base de datos
     const query = `
       INSERT INTO negocios 
-      (nombre, email, ubicacion, descripcion, tipo, url_negocio, dia, horario_apertura, horario_cierre, user_id, imagenes) 
+      (nombre, email, ubicacion, descripcion, tipo, url_negocio, dia, horario_apertura, horario_cierre, user_id, permisos) 
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
     `;
 
