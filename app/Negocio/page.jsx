@@ -52,7 +52,6 @@ export default function BusinessProfile() {
         
         if (!token) {
           console.log("No hay token en localStorage");
-          alert("Debes iniciar sesión para acceder a esta página.");
           router.push("/Login");
           return;
         }
@@ -87,7 +86,6 @@ export default function BusinessProfile() {
   if (isLoading) {
     return (
       <div className="loading-container">
-        <p>Verificando autenticación...</p>
       </div>
     );
   }
@@ -187,25 +185,29 @@ export default function BusinessProfile() {
         newBusiness.closingHours.period
       );
 
-      const businessData = {
-        nombre: newBusiness.name,
-        email: newBusiness.category,
-        ubicacion: newBusiness.location,
-        descripcion: newBusiness.description,
-        tipo: newBusiness.type,
-        url_negocio: newBusiness.url,
-        dia: selectedDays.join(","),
-        horario_apertura,
-        horario_cierre
-      };
+      // Crear FormData para enviar la imagen y los datos
+      const formData = new FormData();
+      formData.append('nombre', newBusiness.name);
+      formData.append('email', newBusiness.category);
+      formData.append('ubicacion', newBusiness.location);
+      formData.append('descripcion', newBusiness.description);
+      formData.append('tipo', newBusiness.type);
+      formData.append('url_negocio', newBusiness.url);
+      formData.append('dia', selectedDays.join(","));
+      formData.append('horario_apertura', horario_apertura);
+      formData.append('horario_cierre', horario_cierre);
+
+      // Agregar la imagen si existe
+      if (newBusiness.image) {
+        formData.append('imagen', newBusiness.image);
+      }
 
       const response = await fetch("/api/negocio", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(businessData),
+        body: formData,
       });
 
       if (response.ok) {
