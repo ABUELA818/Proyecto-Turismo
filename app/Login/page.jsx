@@ -10,7 +10,7 @@ export default function Login() {
   const [nombre, setNombre] = useState('');
   const [correo, setCorreo] = useState('');
   const [contraseña, setContraseña] = useState('');
-  
+  const router = useRouter();
 
   const activar = () => {
     setIsActive(true);
@@ -62,10 +62,25 @@ export default function Login() {
   
       if (response.ok) {
         const data = await response.json();
-        alert(`Bienvenido, ${data.user.name}`); 
+        
+        // Guardar el token y esperar a que se complete
+        await new Promise((resolve) => {
+          localStorage.setItem('token', data.token);
+          resolve();
+        });
+
+        // Verificar que el token se guardó correctamente
+        const storedToken = localStorage.getItem('token');
+        if (!storedToken) {
+          throw new Error('Error al guardar el token');
+        }
+
+        alert(`Bienvenido, ${data.user.name}`);
+        // Redirigir después de asegurarnos que el token está guardado
+        router.push('/Landing');
       } else {
         const errorData = await response.json();
-        alert(errorData.message); 
+        alert(errorData.message);
       }
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
