@@ -1,8 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   images: {
-    domains: ['dgoturismo2025.s3.us-west-1.amazonaws.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'dgoturismo2025.s3.us-west-1.amazonaws.com',
+        // port: '', // Opcional
+        // pathname: '/uploads/**', // Opcional: si todas tus imágenes están bajo /uploads/
+      },
+      // Puedes añadir aquí otros dominios si es necesario
+    ],
   },
 };
 
-module.exports = nextConfig; 
+export default nextConfig;
