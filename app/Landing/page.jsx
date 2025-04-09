@@ -27,6 +27,20 @@ import Tarjetas_Restaurantes from "../../components/Tarjetas_Restaurantes/Tarjet
 
 export default function Landing_Page (){
     const [modalActivo, setModalActivo] = useState(false);
+    const [comentarios, setComentarios] = useState([]);
+
+    useEffect(() => {
+        async function fetchComentarios() {
+            try {
+                const response = await fetch("/api/comments");
+                const data = await response.json();
+                setComentarios(data);
+            } catch (error) {
+                console.error("Error fetching comments:", error);
+            }
+        }
+        fetchComentarios();
+    }, []);
 
 /*===================================
 =====================================
@@ -37,15 +51,6 @@ reemplazen las variables por los
 datos de la bd :)
 =====================================
 ===================================*/
-
-/*================================
-Datos que incluyen los comentarios
-================================*/
-        var Img_Ruta = "fondo.jpg";
-        var Img_User = "Img_Perfil.jpg";
-        var User = "Maria Eliot";
-        var Calificacion = "3";
-        var Comentario = "bonita ciudad, la gente es muy amable, volveré";
 
 /*=====================================
 Mensaje diapositiva Historia de Durango
@@ -274,7 +279,16 @@ Aqui ya empieza la estructura de la Landing
                 </div>
                 <div className="Comentarios">
                     <div className="Comentarios_Contenedor">
-                        <Comentarios Img_Ruta={Img_Ruta} Img_User={Img_User} User={User} Calificacion={Calificacion} Comentario={Comentario}/>
+                        {comentarios.map((comentario, index) => (
+                            <Comentarios
+                                key={index}
+                                Img_Ruta={comentario.imagen_usuario || "default.jpg"}
+                                Img_User={comentario.imagen_usuario || "default.jpg"}
+                                User={comentario.nombre_usuario}
+                                Calificacion={comentario.estrellas}
+                                Comentario={comentario.comentario}
+                            />
+                        ))}
                     </div>
                 </div>
 
@@ -284,4 +298,4 @@ Aqui ya empieza la estructura de la Landing
             </div>
         </>
     )
-}   
+}

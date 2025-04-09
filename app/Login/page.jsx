@@ -75,7 +75,6 @@ export default function Login() {
           throw new Error('Error al guardar el token');
         }
 
-        alert(`Bienvenido, ${data.user.name}`);
         // Redirigir después de asegurarnos que el token está guardado
         router.push('/Landing');
       } else {
