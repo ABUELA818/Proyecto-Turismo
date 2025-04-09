@@ -25,7 +25,7 @@ export default function Navbar() {
                     />
                 </div>
                 <div><Link href="/Landing/Gastronomia" className="opcion centro">GASTRONOMIA</Link ></div>
-                <div><Link href="/Landing/Hoteleria2" className="opcion medio">HOTELERIA</Link></div>
+                <div><Link href="/Landing/Hoteleria" className="opcion medio">HOTELERIA</Link></div>
                 <div><Link href="." className="opcion final">CONTACTO</Link></div>
             </div>
             <div className="Contenedor_Perfil"><Link href="." ><FaUser className="Perfil" /></Link></div>
