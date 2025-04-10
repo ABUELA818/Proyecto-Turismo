@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 
 import "./Gastronomia.css";
@@ -49,6 +49,11 @@ export default function Gastronomia() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    const seccion2Ref = useRef(null)
+    const seccion3Ref = useRef(null)
+    const seccion4Ref = useRef(null)
+    const seccion4TRRef = useRef(null)
+
     useEffect(() => {
         const fetchTopRestaurants = async () => {
             try {
@@ -91,15 +96,15 @@ export default function Gastronomia() {
                 <div className="Gastronomia_Seccion1">
                     <div className="Seccion1_Izq">
                         <div className="Seccion1_Cuadro">
-                            <div className="Gastronomia_Titulos">
+                            <div className="Gastronomia_Titulos" onClick={() => seccion2Ref.current.scrollIntoView({ behavior: "smooth" })}>
                                 <h3>Platos Tipicos</h3>
                                 <p>Descripcion de la seccion de platos tipicos</p>
                             </div>
-                            <div className="Gastronomia_Titulos">
+                            <div className="Gastronomia_Titulos" onClick={() => seccion3Ref.current.scrollIntoView({ behavior: "smooth" })}>
                                 <h3>Bebidas y Postres</h3>
                                 <p>Descripcion</p>
                             </div>
-                            <div className="Gastronomia_Titulos">
+                            <div className="Gastronomia_Titulos" onClick={() => seccion4Ref.current.scrollIntoView({ behavior: "smooth" })}>
                                 <h3>Donde Comer</h3>
                                 <p>Descripcion</p>
                             </div>
@@ -126,7 +131,7 @@ export default function Gastronomia() {
                         </div>
                     </div>
                 </div>
-                <div className="Gastronomia_Seccion2">
+                <div className="Gastronomia_Seccion2" ref={seccion2Ref}>
                 <div className="gallery-container" onClick={handleClick}>
                     {order.map((item, index) => (
                         <motion.div
@@ -243,7 +248,7 @@ export default function Gastronomia() {
                     </div>
                 </div>
 
-                <div className="Gastronomia_Seccion3">
+                <div className="Gastronomia_Seccion3" ref={seccion3Ref}>
                     <div className="Seccion3_Titulo">
                         <h6>Bebidas y Postres</h6>
                     </div>
@@ -348,38 +353,56 @@ export default function Gastronomia() {
                     </div>
                     <div className="Seccion4_Restaurantes">
                         <div className="Restaurantes_Izq">
-                            <div className="Restaurantes_Tarjetas">
-                                <div className="Imagen_Restaurantes">
-                                    <Image
-                                        src="/assets/Restaurantes/Restaurantes1.jpg"
-                                        alt="Restaurantes"
-                                        width={850}
-                                        height={400}
-                                        className="Img_Restaurantes"
-                                    />
-                                </div>
-                                <div className="Info_Restaurantes">
-                                    <h6>Restaurantes destacados</h6>
-                                    <Estrellas_Calf calificacion={4}/> 
-                                </div>
-                            </div>
+                            <div
+                className="Restaurantes_Tarjetas"
+                onClick={() => seccion4TRRef.current.scrollIntoView({ behavior: "smooth" })}
+              >
+                <div className="Imagen_Restaurantes">
+                  <Image
+                    src="/assets/Restaurantes/Restaurantes1.jpg"
+                    alt="Restaurantes"
+                    width={850}
+                    height={400}
+                    className="Img_Restaurantes"
+                  />
+                </div>
+                <div className="Info_Restaurantes">
+                  <h6>Restaurantes destacados</h6>
+                  <Estrellas_Calf calificacion={4} />
+                </div>
+              </div>
 
-                            <div className="Restaurantes_Tarjetas">
-                                <div>
-                                    <Image
-                                        src="/assets/Restaurantes/Restaurantes2.jpg"
-                                        alt="Restaurantes"
-                                        width={850}
-                                        height={400}
-                                        className="Img_Restaurantes"
-                                    />
-                                </div>
-                                <div className="Info_Restaurantes">
-                                    <h6>Restaurantes Tradicionales</h6>
-                                </div>
-                            </div>
+              <div
+                className="Restaurantes_Tarjetas"
+                onClick={() => seccion4TRRef.current.scrollIntoView({ behavior: "smooth" })}
+              >
+                <div>
+                  <Image
+                    src="/assets/Restaurantes/Restaurantes2.jpg"
+                    alt="Restaurantes"
+                    width={850}
+                    height={400}
+                    className="Img_Restaurantes"
+                  />
+                </div>
+                <div className="Info_Restaurantes">
+                  <h6>Restaurantes Tradicionales</h6>
+                </div>
+              </div>
+            </div>
+            <div className="Restaurantes_Der chef-container">
+              <div className="Imagen_Chef">
+                <Image
+                  src="/assets/Restaurantes/Restaurantes3.jpg"
+                  alt="Restaurantes"
+                  width={380}
+                  height={1000}
+                  className="Img_Chef"
+                />
+              </div>
+            </div>
                         </div>
-                        <div className="Restaurantes_Der">
+                        <div className="Restaurantes_Der chef-container">
                             <div className="Imagen_Chef">
                                 <Image
                                     src="/assets/Restaurantes/Restaurantes3.jpg"
@@ -391,23 +414,27 @@ export default function Gastronomia() {
                             </div>
                         </div>
                     </div>
-                    <div className="Seccion4_TarjetasR">
+                    <div className="Seccion4_TarjetasR" ref={seccion4Ref}>
                         <div className="Seccion4_Raya2"></div>
                         <div className="Seccion4_TR">
+                            <div className="Seccion4_TR_Carousel">
                             {loading && <p>Cargando restaurantes...</p>} 
                             {error && <p style={{ color: 'red' }}>{error}</p>} 
                             {!loading && !error && topRestaurants.length > 0 ? (
                                 topRestaurants.map((restaurant) => (
+                                    <div className="carousel-item"/>
                                     <Tarjetas_Restaurantes 
                                         key={restaurant.negocio_id}
                                         Img_Restaurantes={restaurant.imagen_negocio || "tarjeta_default.jpg"}
                                         Restaurantes_Nombres={restaurant.nombre_negocio}
                                         Restaurantes_Calificacion={restaurant.promedio_estrellas}
                                     />
+                                    </div>
                                 ))
                             ) : (
                                 !loading && !error && <p>No hay restaurantes destacados por el momento.</p>
                             )}
+                            </div>
                         </div>
                     </div>
                 </div>
