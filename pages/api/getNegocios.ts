@@ -23,7 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   }
 
   try {
-    const query = 'SELECT * FROM establecimientos ';
+    const query = 'SELECT * FROM negocios'; 
     const [rows]: any = await pool.query(query);
 
     res.status(200).json({ negocios: rows });

@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect} from "react"
 import Image from "next/image"
 import "./usercss.css"
 
@@ -10,28 +10,82 @@ export default function Perfil() {
   const [editandoPerfil, setEditandoPerfil] = useState(false)
   const [editandoFotoPerfil, setEditandoFotoPerfil] = useState(false)
   const [editandoColeccion, setEditandoColeccion] = useState(false)
+  const [cargando, setCargando] = useState(false)
+  const [mensaje, setMensaje] = useState("")
 
   // Estados para datos del perfil
-  const [nombre, setNombre] = useState("Rafita")
-  const [ubicacion, setUbicacion] = useState("Durango, México")
-  const [fecha, setFecha] = useState("02.25.12")
-  const [descripcion, setDescripcion] = useState("descripción del usuario, gustos etc.")
-  const [gustos, setGustos] = useState(["gusto 1", "gusto 2"])
+  const [nombre, setNombre] = useState("")
+  const [ubicacion, setUbicacion] = useState("")
+  const [fecha, setFecha] = useState("")
+  const [descripcion, setDescripcion] = useState("")
+  const [gustos, setGustos] = useState([])
   const [fotoPerfil, setFotoPerfil] = useState("/assets/Perfil/user.jpg")
   const [fotoFondo, setFotoFondo] = useState("/assets/Perfil/fon.png")
-
+  
   // Estados para colección
-  const [coleccion, setColeccion] = useState([
-    { id: 1, src: "/assets/Coleccion/ciudad.jpg", alt: "Ciudad" },
-    { id: 2, src: "/assets/Coleccion/montanas.jpg", alt: "Montañas" },
-    { id: 3, src: "/assets/Coleccion/otono.jpg", alt: "Paisaje otoñal" },
-    { id: 4, src: "/assets/Coleccion/puente.jpg", alt: "Puente" },
-  ])
+  const [coleccion, setColeccion] = useState([])
 
   // Referencias para input de archivos
   const fotoPerfilInputRef = useRef(null)
   const fotoFondoInputRef = useRef(null)
   const fotoColeccionInputRef = useRef(null)
+
+  // Función para subir una imagen al servidor
+  const subirImagen = async (archivo) => {
+    const formData = new FormData();
+    formData.append('file', archivo);
+    
+    try {
+      const response = await fetch('/api/perfil/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error('Error al subir la imagen');
+      }
+      
+      const data = await response.json();
+      return data.path;
+    } catch (error) {
+      console.error('Error al subir imagen:', error);
+      throw error;
+    }
+  };
+
+  // Cargar datos del perfil al iniciar
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        setCargando(true);
+        // Obtener el ID del usuario de la sesión o localStorage
+        const userId =  4; // Usar 2 como fallback
+        
+        const response = await fetch(`/api/perfil/${userId}`);
+        if (!response.ok) {
+          throw new Error('Error al cargar el perfil');
+        }
+        
+        const data = await response.json();
+        
+        setNombre(data.nombre || "");
+        setUbicacion(data.ubicacion || "");
+        setFecha(data.fecha || "");
+        setDescripcion(data.descripcion || "");
+        setGustos(data.gustos || []);
+        setFotoPerfil(data.fotoPerfil || "/assets/Perfil/user.jpg");
+        setFotoFondo(data.fotoFondo || "/assets/Perfil/fon.png");
+        setColeccion(data.coleccion || []);
+      } catch (error) {
+        console.error('Error al cargar el perfil:', error);
+        setMensaje("Error al cargar el perfil. Por favor, inténtalo de nuevo.");
+      } finally {
+        setCargando(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   // Funciones para toggle de edición
   const toggleEditar = () => {
@@ -90,41 +144,88 @@ export default function Perfil() {
   }
 
   // Funciones para manejo de imágenes
-  const handleFotoPerfilChange = (e) => {
+  const handleFotoPerfilChange = async (e) => {
     const file = e.target.files[0]
     if (file) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        setFotoPerfil(e.target.result)
+      try {
+        setCargando(true);
+        // Mostrar vista previa inmediata
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setFotoPerfil(e.target.result);
+        };
+        reader.readAsDataURL(file);
+        
+        // Subir al servidor
+        const path = await subirImagen(file);
+        setFotoPerfil(path);
+        setMensaje("Foto de perfil actualizada correctamente");
+      } catch (error) {
+        console.error('Error al actualizar foto de perfil:', error);
+        setMensaje("Error al actualizar la foto de perfil");
+      } finally {
+        setCargando(false);
       }
-      reader.readAsDataURL(file)
     }
   }
 
-  const handleFotoFondoChange = (e) => {
+  const handleFotoFondoChange = async (e) => {
     const file = e.target.files[0]
     if (file) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        setFotoFondo(e.target.result)
+      try {
+        setCargando(true);
+        // Mostrar vista previa inmediata
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setFotoFondo(e.target.result);
+        };
+        reader.readAsDataURL(file);
+        
+        // Subir al servidor
+        const path = await subirImagen(file);
+        setFotoFondo(path);
+        setMensaje("Foto de fondo actualizada correctamente");
+      } catch (error) {
+        console.error('Error al actualizar foto de fondo:', error);
+        setMensaje("Error al actualizar la foto de fondo");
+      } finally {
+        setCargando(false);
       }
-      reader.readAsDataURL(file)
     }
   }
 
-  const handleFotoColeccionChange = (e) => {
+  const handleFotoColeccionChange = async (e) => {
     const file = e.target.files[0]
     if (file) {
-      const reader = new FileReader()
-      reader.onload = (e) => {
+      try {
+        setCargando(true);
+        // Mostrar vista previa inmediata
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          const nuevaFoto = {
+            id: Date.now(),
+            src: e.target.result,
+            alt: "Nueva imagen",
+          };
+          setColeccion([...coleccion, nuevaFoto]);
+        };
+        reader.readAsDataURL(file);
+        
+        // Subir al servidor
+        const path = await subirImagen(file);
         const nuevaFoto = {
           id: Date.now(),
-          src: e.target.result,
+          src: path,
           alt: "Nueva imagen",
-        }
-        setColeccion([...coleccion, nuevaFoto])
+        };
+        setColeccion([...coleccion, nuevaFoto]);
+        setMensaje("Imagen agregada a la colección correctamente");
+      } catch (error) {
+        console.error('Error al agregar imagen a la colección:', error);
+        setMensaje("Error al agregar la imagen a la colección");
+      } finally {
+        setCargando(false);
       }
-      reader.readAsDataURL(file)
     }
   }
 
@@ -132,17 +233,71 @@ export default function Perfil() {
     setColeccion(coleccion.filter((foto) => foto.id !== id))
   }
 
-  // Función para guardar cambios
-  const guardarCambios = () => {
-    // Aquí se implementaría la lógica para guardar en backend
-    setEditandoPerfil(false)
-    setEditandoFotoPerfil(false)
-    setEditandoColeccion(false)
-    setEditando(false)
+  const guardarCambios = async () => {
+    try {
+      setCargando(true);
+      setMensaje("");
+      
+      // Obtener el ID del usuario de la sesión o localStorage
+      const userId = localStorage.getItem('userId') || 2; // Usar 2 como fallback
+      
+      const profileData = {
+        nombre,
+        ubicacion,
+        fecha,
+        descripcion,
+        gustos,
+        fotoPerfil,
+        fotoFondo,
+        coleccion,
+      };
+
+      const response = await fetch(`/api/perfil/${userId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(profileData),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al guardar los cambios');
+      }
+
+      setEditandoPerfil(false);
+      setEditandoFotoPerfil(false);
+      setEditandoColeccion(false);
+      setEditando(false);
+      setMensaje("Perfil actualizado correctamente");
+    } catch (error) {
+      console.error('Error al guardar cambios:', error);
+      setMensaje("Error al guardar los cambios. Por favor, inténtalo de nuevo.");
+    } finally {
+      setCargando(false);
+    }
+  };
+
+  // Mostrar mensaje de carga o error
+  if (cargando) {
+    return (
+      <div className="Contenedor_Principal">
+        <div className="Mensaje_Carga">
+          <p>Cargando...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
     <div className="Contenedor_Principal">
+      {/* Mensaje de estado */}
+      {mensaje && (
+        <div className="Mensaje_Estado">
+          <p>{mensaje}</p>
+          <button onClick={() => setMensaje("")}>Cerrar</button>
+        </div>
+      )}
+      
       {/* Fondo */}
       <div className="Fondo">
         <Image
@@ -348,7 +503,7 @@ export default function Perfil() {
               <ul className="Lista_Gustos">
                 {editandoPerfil ? (
                   <>
-                    {gustos.map((gusto, index) => (
+                    {(gustos || []).map((gusto, index) => (
                       <li key={index} className="Gusto_Editable">
                         <input
                           type="text"
@@ -392,7 +547,7 @@ export default function Perfil() {
                   </>
                 ) : (
                   <>
-                    {gustos.map((gusto, index) => (
+                    {(gustos || []).map((gusto, index) => (
                       <li key={index}>{gusto}</li>
                     ))}
                   </>

@@ -6,7 +6,7 @@ import Link from "next/link";
 interface Tarjetas_Restaurantes_Props {
   Img_Restaurantes: string;
   Restaurantes_Nombres: string;
-  Restaurantes_Calificacion: boolean;
+  Restaurantes_Calificacion: number;
 }
 
 export default function Tarjetas_Restaurantes({
@@ -14,21 +14,26 @@ export default function Tarjetas_Restaurantes({
   Restaurantes_Nombres,
   Restaurantes_Calificacion,
 }: Tarjetas_Restaurantes_Props) {
+  const calificacionNumerica = Number(Restaurantes_Calificacion);
+
   return (
     <>
       <Link href="/Negocio">
         <div className="Tarjeta">
           <Image
-            src={"/assets/Landing/" + Img_Restaurantes}
-            alt="Transporte"
+            src={Img_Restaurantes.startsWith('http') ? Img_Restaurantes : "/assets/Landing/" + Img_Restaurantes}
+            alt={Restaurantes_Nombres}
             width={300}
             height={400}
             className="Img_Tarjeta"
+            onError={(e) => {
+              console.error(`Error al cargar imagen: ${Img_Restaurantes}`);
+            }}
           />
           <div className="Res_Info">
             <p>{Restaurantes_Nombres}</p>
             <div className="Estrellas_Contenedor">
-              <Estrellas_Calf calificacion={Restaurantes_Calificacion} />
+              <Estrellas_Calf calificacion={calificacionNumerica} />
             </div>
           </div>
         </div>

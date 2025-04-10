@@ -1,8 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import pool from '../../lib/db';
+import jwt from 'jsonwebtoken';
+import bcrypt from 'bcryptjs';
+import { JWT_SECRET, JWT_EXPIRES_IN } from '../../lib/config';
 
 type Data = {
   message: string;
+  token?: string;
   user?: {
     id: number;
     name: string;
@@ -22,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   }
 
   try {
-    const query = 'SELECT id, name, email, password FROM users WHERE email = ?';
+    const query = 'SELECT id, name, email, password, rol FROM users WHERE email = ?';
     const [rows]: any = await pool.execute(query, [email]);
 
     if (rows.length === 0) {
@@ -31,14 +35,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
     const user = rows[0];
 
-    const isPasswordValid = password === user.password; 
+    // Verificar la contraseña encriptada
+    const isPasswordValid = await bcrypt.compare(password, user.password);
 
     if (!isPasswordValid) {
       return res.status(401).json({ message: 'Invalid email or password' });
     }
 
+    // Generar token JWT
+    const token = jwt.sign(
+      { 
+        id: user.id,
+        email: user.email,
+        rol: user.rol
+      },
+      JWT_SECRET,
+      { expiresIn: JWT_EXPIRES_IN }
+    );
+
     res.status(200).json({
       message: 'Login successful',
+      token,
       user: {
         id: user.id,
         name: user.name,

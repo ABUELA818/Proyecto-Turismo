@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 
 import "./Gastronomia.css";
@@ -44,19 +44,32 @@ const items = [
 ];
 
 export default function Gastronomia() {
-    var Img_Restaurante1 = "tarjeta1.jpg";
-    var Img_Restaurante2 = "tarjeta2.jpg";
-    var Img_Restaurante3 = "tarjeta3.jpg";
-
-    var Nom_Restaurante1 = "Barocco";
-    var Nom_Restaurante2 = "Casa Abuela";
-    var Nom_Restaurante3 = "Mendoza";
-
-    var Calf_Restaurante1 = "4";
-    var Calf_Restaurante2 = "2";
-    var Calf_Restaurante3 = "5";
-
     const [order, setOrder] = useState(items);
+    const [topRestaurants, setTopRestaurants] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        const fetchTopRestaurants = async () => {
+            try {
+                setLoading(true);
+                const response = await fetch('/api/top-restaurants');
+                if (!response.ok) {
+                    throw new Error('Error al obtener los restaurantes');
+                }
+                const data = await response.json();
+                setTopRestaurants(data);
+                setError(null);
+            } catch (err) {
+                console.error(err);
+                setError('No se pudieron cargar los restaurantes.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchTopRestaurants();
+    }, []);
 
     const handleClick = () => {
         setOrder((prev) => [...prev.slice(1), prev[0]]);
@@ -381,9 +394,20 @@ export default function Gastronomia() {
                     <div className="Seccion4_TarjetasR">
                         <div className="Seccion4_Raya2"></div>
                         <div className="Seccion4_TR">
-                            <Tarjetas_Restaurantes Img_Restaurantes={Img_Restaurante1} Restaurantes_Nombres={Nom_Restaurante1} Restaurantes_Calificacion={Calf_Restaurante1}/>
-                            <Tarjetas_Restaurantes Img_Restaurantes={Img_Restaurante2} Restaurantes_Nombres={Nom_Restaurante2} Restaurantes_Calificacion={Calf_Restaurante2}/>
-                            <Tarjetas_Restaurantes Img_Restaurantes={Img_Restaurante3} Restaurantes_Nombres={Nom_Restaurante3} Restaurantes_Calificacion={Calf_Restaurante3}/>
+                            {loading && <p>Cargando restaurantes...</p>} 
+                            {error && <p style={{ color: 'red' }}>{error}</p>} 
+                            {!loading && !error && topRestaurants.length > 0 ? (
+                                topRestaurants.map((restaurant) => (
+                                    <Tarjetas_Restaurantes 
+                                        key={restaurant.negocio_id}
+                                        Img_Restaurantes={restaurant.imagen_negocio || "tarjeta_default.jpg"}
+                                        Restaurantes_Nombres={restaurant.nombre_negocio}
+                                        Restaurantes_Calificacion={restaurant.promedio_estrellas}
+                                    />
+                                ))
+                            ) : (
+                                !loading && !error && <p>No hay restaurantes destacados por el momento.</p>
+                            )}
                         </div>
                     </div>
                 </div>

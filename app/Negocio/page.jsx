@@ -1,11 +1,16 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import Image from "next/image"
-import "./negocio.css"
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import { jwtDecode } from "jwt-decode";
+import "./negocio.css";
 
 export default function BusinessProfile() {
-  const [selectedDays, setSelectedDays] = useState([])
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [selectedDays, setSelectedDays] = useState([]);
   const [profileData, setProfileData] = useState({
     name: "Rafita",
     location: "Durango, Mexico",
@@ -13,11 +18,9 @@ export default function BusinessProfile() {
     likes: "16",
     backgroundImage: "/assets/Negocio/pan.png",
     profileImage: "/assets/Negocio/per.png",
-  })
-
-  const [isEditingProfile, setIsEditingProfile] = useState(false)
-  const [editedProfileData, setEditedProfileData] = useState(profileData)
-
+  });
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editedProfileData, setEditedProfileData] = useState(profileData);
   const [newBusiness, setNewBusiness] = useState({
     name: "",
     category: "",
@@ -37,44 +40,94 @@ export default function BusinessProfile() {
       period: "PM",
     },
     image: null,
-  })
+  });
+  const [businessList, setBusinessList] = useState([]);
+  const [previewImage, setPreviewImage] = useState(null);
 
-  const [businessList, setBusinessList] = useState([])
-  const [previewImage, setPreviewImage] = useState(null)
+  // Validación de autenticación
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        
+        if (!token) {
+          console.log("No hay token en localStorage");
+          router.push("/Login");
+          return;
+        }
+
+        // Verificar que el token es válido
+        const decoded = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+
+        if (decoded.exp < currentTime) {
+          console.log("Token expirado");
+          alert("Tu sesión ha expirado. Por favor, inicia sesión nuevamente.");
+          localStorage.removeItem("token");
+          router.push("/Login");
+          return;
+        }
+
+        console.log("Token válido, usuario autenticado");
+        setIsAuthenticated(true);
+      } catch (error) {
+        console.error("Error al verificar el token:", error);
+        localStorage.removeItem("token");
+        router.push("/Login");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, [router]);
+
+  // Si está cargando, mostrar un mensaje de carga
+  if (isLoading) {
+    return (
+      <div className="loading-container">
+      </div>
+    );
+  }
+
+  // Si no está autenticado, no mostrar el contenido
+  if (!isAuthenticated) {
+    return null;
+  }
 
   const handleImageUpload = (e) => {
     if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0]
-      setNewBusiness({ ...newBusiness, image: file })
-      setPreviewImage(URL.createObjectURL(file))
+      const file = e.target.files[0];
+      setNewBusiness({ ...newBusiness, image: file });
+      setPreviewImage(URL.createObjectURL(file));
     }
-  }
+  };
 
   const handleDaySelect = (day) => {
     setSelectedDays((prev) => {
       if (prev.includes(day)) {
-        return prev.filter((d) => d !== day)
+        return prev.filter((d) => d !== day);
       } else {
-        return [...prev, day]
+        return [...prev, day];
       }
-    })
-  }
+    });
+  };
 
   const handleInputChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setNewBusiness((prev) => ({
       ...prev,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   const handleSelectChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setNewBusiness((prev) => ({
       ...prev,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   const handleTimeChange = (type, field, value) => {
     setNewBusiness((prev) => ({
@@ -83,87 +136,113 @@ export default function BusinessProfile() {
         ...prev[type],
         [field]: value,
       },
-    }))
-  }
+    }));
+  };
 
   const handleProfileInputChange = (e) => {
-    const { name, value } = e.target
+    const { name, value } = e.target;
     setEditedProfileData((prev) => ({
       ...prev,
       [name]: value,
-    }))
-  }
+    }));
+  };
 
   const saveProfileChanges = () => {
-    setProfileData(editedProfileData)
-    setIsEditingProfile(false)
-  }
+    setProfileData(editedProfileData);
+    setIsEditingProfile(false);
+  };
 
   const cancelProfileEdit = () => {
-    setEditedProfileData(profileData)
-    setIsEditingProfile(false)
-  }
+    setEditedProfileData(profileData);
+    setIsEditingProfile(false);
+  };
 
   const handleAddBusiness = async () => {
     try {
-      // Crear el objeto con los datos del negocio
-      const businessData = {
-        nombre: newBusiness.name,
-        email: newBusiness.category, // Cambia "category" a "email" si es necesario
-        ubicacion: newBusiness.location,
-        descripcion: newBusiness.description,
-        tipo: newBusiness.type,
-        url_negocio: newBusiness.url,
-        dia: selectedDays.join(','), // Convertir los días seleccionados en una cadena separada por comas
-        horario_apertura: `${newBusiness.openingHours.hour}:${newBusiness.openingHours.minute} ${newBusiness.openingHours.period}`,
-        horario_cierre: `${newBusiness.closingHours.hour}:${newBusiness.closingHours.minute} ${newBusiness.closingHours.period}`,
-        user_id: 1, // Cambia esto por el ID del usuario autenticado si es necesario
+      const token = localStorage.getItem("token");
+      if (!token) {
+        alert("Debes estar autenticado para crear un negocio");
+        return;
+      }
+
+      // Convertir los horarios a formato de 24 horas
+      const formatTime = (hours, minutes, period) => {
+        let hour = parseInt(hours);
+        if (period === "PM" && hour !== 12) hour += 12;
+        if (period === "AM" && hour === 12) hour = 0;
+        return `${hour.toString().padStart(2, "0")}:${minutes}`;
       };
-  
-      // Enviar los datos a la API
-      const response = await fetch('/api/negocio', {
-        method: 'POST',
+
+      const horario_apertura = formatTime(
+        newBusiness.openingHours.hour,
+        newBusiness.openingHours.minute,
+        newBusiness.openingHours.period
+      );
+
+      const horario_cierre = formatTime(
+        newBusiness.closingHours.hour,
+        newBusiness.closingHours.minute,
+        newBusiness.closingHours.period
+      );
+
+      // Crear FormData para enviar la imagen y los datos
+      const formData = new FormData();
+      formData.append('nombre', newBusiness.name);
+      formData.append('email', newBusiness.category);
+      formData.append('ubicacion', newBusiness.location);
+      formData.append('descripcion', newBusiness.description);
+      formData.append('tipo', newBusiness.type);
+      formData.append('url_negocio', newBusiness.url);
+      formData.append('dia', selectedDays.join(","));
+      formData.append('horario_apertura', horario_apertura);
+      formData.append('horario_cierre', horario_cierre);
+
+      // Agregar la imagen si existe
+      if (newBusiness.image) {
+        formData.append('imagen', newBusiness.image);
+      }
+
+      const response = await fetch("/api/negocio", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(businessData),
+        body: formData,
       });
-  
+
       if (response.ok) {
         const data = await response.json();
-        alert(data.message); // Mostrar mensaje de éxito
-        setBusinessList((prev) => [...prev, { id: prev.length + 1, name: newBusiness.name || 'Nuevo negocio' }]);
-  
-        // Reiniciar el formulario
+        alert(data.message);
+        // Limpiar el formulario después de un registro exitoso
         setNewBusiness({
-          name: '',
-          category: '',
-          location: '',
-          description: '',
-          type: 'Restaurante',
-          subtype: 'negocio tipo 2',
-          url: '',
+          name: "",
+          category: "",
+          location: "",
+          description: "",
+          type: "Restaurante",
+          subtype: "negocio tipo 2",
+          url: "",
           openingHours: {
-            hour: '20',
-            minute: '00',
-            period: 'AM',
+            hour: "20",
+            minute: "00",
+            period: "AM",
           },
           closingHours: {
-            hour: '20',
-            minute: '00',
-            period: 'PM',
+            hour: "20",
+            minute: "00",
+            period: "PM",
           },
           image: null,
         });
-        setPreviewImage(null);
         setSelectedDays([]);
+        setPreviewImage(null);
       } else {
         const errorData = await response.json();
-        alert(errorData.message); // Mostrar mensaje de error
+        alert(errorData.message || "Error al registrar el negocio");
       }
     } catch (error) {
-      console.error('Error al registrar el negocio:', error);
-      alert('Ocurrió un error al registrar el negocio.');
+      console.error("Error al registrar el negocio:", error);
+      alert("Ocurrió un error al registrar el negocio");
     }
   };
 
@@ -582,6 +661,6 @@ export default function BusinessProfile() {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
