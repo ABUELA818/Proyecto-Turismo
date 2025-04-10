@@ -109,17 +109,6 @@ export default function Login() {
               <input type="password" placeholder="Contraseña" value={contraseña} onChange={(e) => setContraseña(e.target.value)} />
               <button className="Btn_Formulario_R" onClick={handleRegistro}>Registrate</button>
             </div>
-            <div className="Redes">
-              <div className="otro2">
-                <h2>O registrate con una red social</h2>
-              </div> 
-              <div className="Btns_Redes">
-                <button className="Google"><FaGoogle /></button>
-                <button className="Facebook"><FaFacebookF /></button>
-                <button className="Instagram"><FaInstagram /></button>
-                <button className="Twitter"><FaTwitter /></button>
-              </div>
-            </div>
           </div>
           <div className="Msj_Login">
             <h6>¡Bienvenido de nuevo!</h6>
@@ -144,17 +133,6 @@ export default function Login() {
               <input type="Password" placeholder="Contraseña" value={contraseña} onChange={(e) => setContraseña(e.target.value)} />
               <button className="Recuperar">¿Olvidaste tu contraseña?</button>
               <button className="Btn_Formulario" onClick={handleLogin}>Inicia Sesion</button>
-            </div>
-            <div className="Redes">
-              <div className="otro">
-                <h2>O registrate con una red social</h2>
-              </div>
-              <div className="Btns_Redes">
-                <button className="Google"><FaGoogle /></button>
-                <button className="Facebook"><FaFacebookF /></button>
-                <button className="Instagram"><FaInstagram /></button>
-                <button className="Twitter"><FaTwitter /></button>
-              </div>
             </div>
           </div>
         </div>
