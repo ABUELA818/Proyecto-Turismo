@@ -18,8 +18,9 @@ export default function Tarjetas_Restaurantes({
 
   return (
     <>
-      <Link href="/Negocio">
+      <Link href="/Vista_Negocio">
         <div className="Tarjeta">
+          <div className="Tarjeta_Container"
           <Image
             src={Img_Restaurantes.startsWith('http') ? Img_Restaurantes : "/assets/Landing/" + Img_Restaurantes}
             alt={Restaurantes_Nombres}
@@ -35,6 +36,7 @@ export default function Tarjetas_Restaurantes({
             <div className="Estrellas_Contenedor">
               <Estrellas_Calf calificacion={calificacionNumerica} />
             </div>
+          </div>
           </div>
         </div>
       </Link>
