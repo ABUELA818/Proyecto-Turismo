@@ -1,4 +1,4 @@
-export default function Estrellas_Calf({ calificacion}) {
+export default function Estrellas_Calf({ calificacion = 0 }) {
     function generarEstrellas(calificacion) {
         let estrellas = [];
 

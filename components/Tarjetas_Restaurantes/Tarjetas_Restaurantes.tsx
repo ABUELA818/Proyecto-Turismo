@@ -20,7 +20,7 @@ export default function Tarjetas_Restaurantes({
     <>
       <Link href="/Vista_Negocio">
         <div className="Tarjeta">
-          <div className="Tarjeta_Container"
+          <div className="Tarjeta_Container">
           <Image
             src={Img_Restaurantes.startsWith('http') ? Img_Restaurantes : "/assets/Landing/" + Img_Restaurantes}
             alt={Restaurantes_Nombres}

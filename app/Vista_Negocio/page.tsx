@@ -22,7 +22,7 @@ Cositas de next
 ==============*/
 import Link from "next/link";
 import Image from "next/image";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 /*========================
 Importacion de componentes
@@ -37,14 +37,16 @@ import Comentarios from "../../components/Comentarios/Comentarios";
 Funcion para que muestre todas las imagenes del menu
 me dio weba hacerlo un componente
 ==================================================*/
-function Galeria_Menu({ lista_menu }) {
+function Galeria_Menu({ lista_menu }: { lista_menu: string[] | undefined }) {
+  const menu = lista_menu || []; // Proporcionar un valor predeterminado si lista_menu es undefined
+
   return (
     <div className="Galeria_Menu_Contenedor">
-      {lista_menu.map((elemento, index) => (
+      {menu.map((elemento, index) => (
         <div key={index} className="Tarjeta_Menu">
           <Image
             src={"/assets/Negocio/" + elemento}
-            alt="Negocio"
+            alt={`Imagen ${index + 1}`}
             width={300}
             height={400}
           />
@@ -57,29 +59,50 @@ function Galeria_Menu({ lista_menu }) {
 /*===============
 Funcion principal
 ===============*/
+type NegocioData = {
+  nombre: string;
+  horario_apertura: string;
+  horario_cierre: string;
+  ubicacion: string;
+  telefono: string;
+  correo: string;
+  calificacion: number;
+  msj_menu?: string;
+  imagenes_menus?: string[];
+  imagenes: string[];
+  promedio_estrellas: number;
+};
+
 export default function Negocio() {
-  /*===============================================================================
-Aqui tengo todas las variables que se muestran referentes a informacion del negocio
-=================================================================================*/
-  var Nombre_Negocio = "Casa Abuela";
-  var Msj_Abierto = "Abierto ahora";
-  var Msj_Cerrado = "Cerrado";
-  var Hora_Apertura = "7:30 am";
-  var Hora_Cierre = "7:00 pm";
-  var Negocio_Direccion =
-    "Salvador Nava Rdgz # 104 pte (antes fresno) Zona Centro , CP.34000, DURANGO";
-  var Negocio_Numero = "618 811 6792";
-  var Negocio_Correo = "casaabuela.durango@gmail.com";
-  var Negocio_Calificacion = 4;
-  var Msj_Menu =
-    "Les compartimos nuestro Menú a domicilio y para llevar Casa Abuela hasta tu casa";
-  var Imagenes_Menus = ["Menu1.jpg", "Menu2.jpg", "Menu3.jpg", "Menu4.jpg"];
+  const [negocioData, setNegocioData] = useState<NegocioData | null>(null);
+  const [image, setImage] = useState<string | null>(null);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
+
+  // Mover todos los hooks al inicio del componente para garantizar el orden
+  useEffect(() => {
+    const fetchNegocioData = async () => {
+      try {
+        const response = await fetch("/api/business?negocio_id=13");
+        const data: NegocioData = await response.json();
+        setNegocioData(data);
+      } catch (error) {
+        console.error("Error fetching negocio data:", error);
+      }
+    };
+
+    fetchNegocioData();
+  }, []);
+
+  if (!negocioData) {
+    return <div>Cargando...</div>;
+  }
 
   /*===============================================
 Estan son variables de ejemplo para los comentarios
 =================================================*/
-  var Img_Ruta = "fondo.jpg";
-  var Img_User = "Img_Perfil.jpg";
+  var Img_Ruta = "/assets/Negocio/fondo.jpg";
+  var Img_User = "/assets/Negocio/Img_Perfil.jpg";
   var User = "Maria Eliot";
   var Calificacion = 3;
   var Comentario = "bonita ciudad, la gente es muy amable, volveré";
@@ -88,10 +111,6 @@ Estan son variables de ejemplo para los comentarios
   Todo esto es para la funcion de enviar la calificacion, comentario e imagen a la bd
   Lo deje mas o menos preparado pero no se si les sirva
 ===================================================================================*/
-  const [image, setImage] = useState<string | null>(null);
-  const [rating, setRating] = useState(0);
-  const [comment, setComment] = useState("");
-
   const handleImageChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
@@ -129,7 +148,7 @@ Estan son variables de ejemplo para los comentarios
       <div className="Negocio_Contenedor">
         <div className="Negocio_Fondo">
           <div className="Msj_Negocio">
-            <h1>{Nombre_Negocio}</h1>
+            <h1>{negocioData.nombre}</h1>
           </div>
         </div>
         <div className="Negocio_Seccion1">
@@ -146,23 +165,22 @@ Estan son variables de ejemplo para los comentarios
               </Link>
             </div>
             <div className="Seccion1_Abierto">
-              <h2>{Msj_Abierto}</h2>
-            </div>
-            <div className="Seccion1_Horario">
               <h2>Horario de atención</h2>
             </div>
             <div className="Seccion1_Horario2">
-              <h2>{Hora_Apertura}</h2>
+              <h2>{negocioData.horario_apertura}</h2>
               <div className="Raya_Horario"></div>
-              <h2>{Hora_Cierre}</h2>
+              <h2>{negocioData.horario_cierre}</h2>
             </div>
             <div className="Seccion1_NegocioInfo">
-              <p>{Negocio_Direccion}</p>
-              <p>{Negocio_Numero}</p>
-              <p>{Negocio_Correo}</p>
+              <p>{negocioData.ubicacion}</p>
+              <p>{negocioData.telefono}</p>
+              <p>{negocioData.correo}</p>
             </div>
             <div className="Seccion1_NegocioCalf">
-              <Estrellas_Calf calificacion={Negocio_Calificacion} />
+              <div className="Estrellas_Contenedor">
+                <Estrellas_Calf calificacion={negocioData.promedio_estrellas || 0} />
+              </div>
             </div>
           </div>
 
@@ -182,9 +200,18 @@ Estan son variables de ejemplo para los comentarios
               <h2>Ven y Conócenos!</h2>
             </div>
             <div className="Msj_Menu">
-              <h3>{Msj_Menu}</h3>
+              <h3>{negocioData.msj_menu || "Descubre nuestro menú"}</h3>
             </div>
-            <Galeria_Menu lista_menu={Imagenes_Menus} />
+            <div className="Galeria_Menu_Contenedor">
+              <div className="Tarjeta_Menu">
+                <Image
+                  src={negocioData.imagenes[0] || "/assets/Negocio/default.jpg"}
+                  alt="Imagen del negocio"
+                  width={300}
+                  height={400}
+                />
+              </div>
+            </div>
           </div>
         </div>
         <div className="Negocio_Seccion3">
@@ -193,7 +220,7 @@ Estan son variables de ejemplo para los comentarios
           </div>
           <div className="Seccion3_Der">
             <div className="Contenedor_InputEstrellas">
-              <Calificar rating={rating} setRating={setRating} />
+              <Estrellas_Calf calificacion={negocioData.calificacion} />
             </div>
             <div className="Seccion3_Comentario">
               <textarea
@@ -237,6 +264,16 @@ Estan son variables de ejemplo para los comentarios
           <div className="Seccion4_sombra"></div>
           <div className="Negocio_Comentarios">
             <div className="Negocio_Comentarios_Contenedor">
+              {negocioData.imagenes.map((imagen, index) => (
+                <div key={index} className="Imagen_Menu">
+                  <Image
+                    src={`/assets/Negocio/${imagen}`}
+                    alt={`Imagen ${index + 1}`}
+                    width={300}
+                    height={400}
+                  />
+                </div>
+              ))}
               <Comentarios
                 Img_Ruta={Img_Ruta}
                 Img_User={Img_User}

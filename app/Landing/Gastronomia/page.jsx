@@ -402,17 +402,7 @@ export default function Gastronomia() {
               </div>
             </div>
                         </div>
-                        <div className="Restaurantes_Der chef-container">
-                            <div className="Imagen_Chef">
-                                <Image
-                                    src="/assets/Restaurantes/Restaurantes3.jpg"
-                                    alt="Restaurantes"
-                                    width={380}
-                                    height={1000}
-                                    className="Img_Chef"
-                                />
-                            </div>
-                        </div>
+                        
                     </div>
                     <div className="Seccion4_TarjetasR" ref={seccion4Ref}>
                         <div className="Seccion4_Raya2"></div>
@@ -422,13 +412,12 @@ export default function Gastronomia() {
                             {error && <p style={{ color: 'red' }}>{error}</p>} 
                             {!loading && !error && topRestaurants.length > 0 ? (
                                 topRestaurants.map((restaurant) => (
-                                    <div className="carousel-item"/>
-                                    <Tarjetas_Restaurantes 
-                                        key={restaurant.negocio_id}
-                                        Img_Restaurantes={restaurant.imagen_negocio || "tarjeta_default.jpg"}
-                                        Restaurantes_Nombres={restaurant.nombre_negocio}
-                                        Restaurantes_Calificacion={restaurant.promedio_estrellas}
-                                    />
+                                    <div className="carousel-item" key={restaurant.negocio_id}>
+                                        <Tarjetas_Restaurantes 
+                                            Img_Restaurantes={restaurant.imagen_negocio || "tarjeta_default.jpg"}
+                                            Restaurantes_Nombres={restaurant.nombre_negocio}
+                                            Restaurantes_Calificacion={restaurant.promedio_estrellas}
+                                        />
                                     </div>
                                 ))
                             ) : (
@@ -438,7 +427,7 @@ export default function Gastronomia() {
                         </div>
                     </div>
                 </div>
-            </div>
+            
             <Footer/>
         </>
     )
